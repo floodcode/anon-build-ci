@@ -11,4 +11,22 @@ jobs:
     steps:
       - name: Set up Docker Buildx
         run: |
-          brew --help
+          brew install automake docbook docbook-xsl zlib libevent openssl@3
+
+          git clone https://github.com/ATOR-Development/ator-protocol.git
+          cd ator-protocol
+
+          ./autogen.sh
+          ./configure --prefix=/usr/local \
+            --disable-asciidoc \
+            --disable-zstd \
+            --disable-lzma \
+            --with-zlib-dir=/opt/homebrew/opt/zlib \
+            --with-libevent-dir=/opt/homebrew/opt/libevent \
+            --with-openssl-dir=/opt/homebrew/opt/openssl@3 \
+            --enable-static-zlib \
+            --enable-static-libevent \
+            --enable-static-openssl \
+            --disable-tool-name-check \
+            --disable-gcc-hardening
+          make
