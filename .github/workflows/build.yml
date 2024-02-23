@@ -30,3 +30,12 @@ jobs:
             --disable-tool-name-check \
             --disable-gcc-hardening
           make
+      - name: Copy binaries
+        run: |
+          mkdir -p macos-binaries/
+          cp src/app/anon/anon macos-binaries/
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: macos-binaries
+          path: macos-binaries/
