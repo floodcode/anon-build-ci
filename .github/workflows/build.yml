@@ -33,7 +33,7 @@ jobs:
       - name: Copy binaries
         run: |
           mkdir -p macos-binaries/
-          cp src/app/anon macos-binaries/
+          cp ator-protocol/src/app/anon macos-binaries/
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
