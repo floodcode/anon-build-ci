@@ -40,13 +40,13 @@ jobs:
           make
       - name: Set variables
         run: |
-          echo "ANON_ARCH=$(uname -m)" >> $GITHUB_ENV
+          echo "ANON_ARTIFACTS=macos-$(uname -m)-binaries" >> $GITHUB_ENV
       - name: Copy binaries
         run: |
-          mkdir -p macos-binaries/
-          cp ator-protocol/src/app/anon macos-${{ env.ANON_ARCH }}-binaries/
+          mkdir -p ${{ env.ANON_ARTIFACTS }}
+          cp ator-protocol/src/app/anon ${{ env.ANON_ARTIFACTS }}
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: macos-${{ env.ANON_ARCH }}-binaries
-          path: macos-${{ env.ANON_ARCH }}-binaries/
+          name: ${{ env.ANON_ARTIFACTS }}
+          path: ${{ env.ANON_ARTIFACTS }}
