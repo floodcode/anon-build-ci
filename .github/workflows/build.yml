@@ -13,9 +13,11 @@ jobs:
       matrix:
         build:
           - runner: macos-13
+            libdir: /usr/local/opt
           - runner: macos-14
+            libdir: /opt/homebrew/opt
     steps:
-      - name: Set up Docker Buildx
+      - name: Build
         run: |
           brew install automake docbook docbook-xsl zlib libevent openssl@3
 
@@ -27,20 +29,22 @@ jobs:
             --disable-asciidoc \
             --disable-zstd \
             --disable-lzma \
-            --with-zlib-dir=/opt/homebrew/opt/zlib \
-            --with-libevent-dir=/opt/homebrew/opt/libevent \
-            --with-openssl-dir=/opt/homebrew/opt/openssl@3 \
+            --with-zlib-dir=${{ matrix.build.libdir }}/zlib \
+            --with-libevent-dir=${{ matrix.build.libdir }}/libevent \
+            --with-openssl-dir=${{ matrix.build.libdir }}/openssl@3 \
             --enable-static-zlib \
             --enable-static-libevent \
             --enable-static-openssl \
             --disable-tool-name-check \
             --disable-gcc-hardening
           make
+      - name: Set variables
+        run: |
+          echo "ANON_ARCH=$(uname -m)" >> $GITHUB_ENV
       - name: Copy binaries
         run: |
           mkdir -p macos-binaries/
-          cp ator-protocol/src/app/anon macos-binaries/
-          echo "ANON_ARCH=$(uname -m)" >> $GITHUB_ENV
+          cp ator-protocol/src/app/anon macos-${{ env.ANON_ARCH }}-binaries/
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
