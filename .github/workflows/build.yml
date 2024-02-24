@@ -79,11 +79,11 @@ jobs:
           tar zxf openssl-${OPENSSL_VERSION}.tar.gz
           rm openssl-${OPENSSL_VERSION}.tar.gz
 
-          pushd openssl-${OPENSSL_VERSION}
+          cd openssl-${OPENSSL_VERSION}
           ./Configure ${MINGW} shared --cross-compile-prefix=${CROSS_HOST}- --prefix="/build/openssl-${BUILD_TYPE}-prefix/"
           make -j4
           make install
-          popd
+          cd ..
 
           rm -rf openssl-${OPENSSL_VERSION}
       - name: Build libevent
@@ -92,11 +92,11 @@ jobs:
           tar zxf libevent-${LIBEVENT_VERSION}.tar.gz
           rm libevent-${LIBEVENT_VERSION}.tar.gz
 
-          pushd libevent-${LIBEVENT_VERSION}
+          cd libevent-${LIBEVENT_VERSION}
           ./configure --host=${CROSS_HOST} --disable-openssl --disable-shared --disable-samples --disable-libevent-regress --enable-static --prefix="/build/libevent-${BUILD_TYPE}-prefix/"
           make -j4
           make install
-          popd
+          cd ..
 
           rm -rf libevent-${LIBEVENT_VERSION}
       - name: Build zlib
@@ -105,18 +105,18 @@ jobs:
           tar zxf zlib-${ZLIB_VERSION}.tar.gz
           rm zlib-${ZLIB_VERSION}.tar.gz
 
-          pushd zlib-${ZLIB_VERSION}
+          cd zlib-${ZLIB_VERSION}
           CHOST=${CROSS_HOST} ./configure --static --prefix="/build/zlib-${BUILD_TYPE}-prefix/"
           make -j4
           make install
-          popd
+          cd ..
 
           rm -rf zlib-${ZLIB_VERSION}
       - name: Build anon
         run: |
           git clone https://github.com/ATOR-Development/ator-protocol.git
 
-          pushd ator-protocol
+          cd ator-protocol
           ./autogen.sh
           ./configure --host=${CROSS_HOST} \
             --disable-asciidoc \
@@ -131,7 +131,6 @@ jobs:
             --prefix="/build/anon-prefix"
           make -j4
           make install
-          popd
       - name: Copy artifact
         run: |
           mkdir -p ${{ env.ANON_ARTIFACT }}
