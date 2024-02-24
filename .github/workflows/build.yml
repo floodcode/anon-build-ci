@@ -21,7 +21,7 @@ jobs:
         run: |
           echo "ANON_ARTIFACT=anon-macos-$(uname -m)" >> $GITHUB_ENV
           echo "ANON_BREW_PREFIX=$(brew --prefix)" >> $GITHUB_ENV
-          echo "ANON_JOBS=$((`nproc`+1))"
+          echo "ANON_JOBS=$(nproc)"
       - name: Build anon
         run: |
           brew install automake docbook docbook-xsl zlib libevent openssl@3
@@ -71,7 +71,7 @@ jobs:
       - name: Set variables
         run: |
           echo "ANON_ARTIFACT=anon-windows-$(uname -m)" >> $GITHUB_ENV
-          echo "ANON_JOBS=$((`nproc`+1))"
+          echo "ANON_JOBS=$(nproc)"
       - name: Install dependencies
         run: |
           apt-get update -qq && \
