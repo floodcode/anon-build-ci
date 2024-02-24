@@ -21,7 +21,6 @@ jobs:
         run: |
           echo "ANON_ARTIFACT=anon-macos-$(uname -m)" >> $GITHUB_ENV
           echo "ANON_BREW_PREFIX=$(brew --prefix)" >> $GITHUB_ENV
-          echo "ANON_JOBS=2"
       - name: Build anon
         run: |
           brew install automake docbook docbook-xsl zlib libevent openssl@3
@@ -42,7 +41,7 @@ jobs:
             --enable-static-openssl \
             --disable-tool-name-check \
             --disable-gcc-hardening
-          make -j${{ env.ANON_JOBS }}
+          make
       - name: Copy executables to artifact directory
         run: |
           mkdir -p ${{ env.ANON_ARTIFACT }}
@@ -71,7 +70,7 @@ jobs:
       - name: Set variables
         run: |
           echo "ANON_ARTIFACT=anon-windows-$(uname -m)" >> $GITHUB_ENV
-          echo "ANON_JOBS=$(nproc)"
+          echo "ANON_JOBS=$((`nproc`+1))"
       - name: Install dependencies
         run: |
           apt-get update -qq && \
