@@ -1,4 +1,4 @@
-name: Build Docker Image
+name: Build OS Packages
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
       - 'main'
 
 jobs:
-  build:
+  build-macos:
     runs-on: ${{ matrix.build.runner }}
     strategy:
       fail-fast: false
@@ -17,7 +17,7 @@ jobs:
     steps:
       - name: Set variables
         run: |
-          echo "ANON_ARTIFACTS=macos-$(uname -m)-binaries" >> $GITHUB_ENV
+          echo "ANON_ARTIFACTS=anon-macos-$(uname -m)" >> $GITHUB_ENV
           echo "ANON_BREW_PREFIX=$(brew --prefix)" >> $GITHUB_ENV
       - name: Build
         run: |
