@@ -13,10 +13,12 @@ jobs:
       matrix:
         build:
           - runner: macos-13
-            libdir: /usr/local/opt
           - runner: macos-14
-            libdir: /opt/homebrew/opt
     steps:
+      - name: Set variables
+        run: |
+          echo "ANON_ARTIFACTS=macos-$(uname -m)-binaries" >> $GITHUB_ENV
+          echo "ANON_BREW_PREFIX=$(brew --prefix)" >> $GITHUB_ENV
       - name: Build
         run: |
           brew install automake docbook docbook-xsl zlib libevent openssl@3
@@ -29,18 +31,15 @@ jobs:
             --disable-asciidoc \
             --disable-zstd \
             --disable-lzma \
-            --with-zlib-dir=${{ matrix.build.libdir }}/zlib \
-            --with-libevent-dir=${{ matrix.build.libdir }}/libevent \
-            --with-openssl-dir=${{ matrix.build.libdir }}/openssl@3 \
+            --with-zlib-dir=${{ env.ANON_BREW_PREFIX }}/opt/zlib \
+            --with-libevent-dir=${{ env.ANON_BREW_PREFIX }}/opt/libevent \
+            --with-openssl-dir=${{ env.ANON_BREW_PREFIX }}/opt/openssl@3 \
             --enable-static-zlib \
             --enable-static-libevent \
             --enable-static-openssl \
             --disable-tool-name-check \
             --disable-gcc-hardening
           make
-      - name: Set variables
-        run: |
-          echo "ANON_ARTIFACTS=macos-$(uname -m)-binaries" >> $GITHUB_ENV
       - name: Copy binaries
         run: |
           mkdir -p ${{ env.ANON_ARTIFACTS }}
