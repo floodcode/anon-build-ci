@@ -12,13 +12,16 @@ jobs:
       fail-fast: false
       matrix:
         build:
+          # Intel
           - runner: macos-13
+          # Apple Silicon
           - runner: macos-14
     steps:
       - name: Set variables
         run: |
           echo "ANON_ARTIFACT=anon-macos-$(uname -m)" >> $GITHUB_ENV
           echo "ANON_BREW_PREFIX=$(brew --prefix)" >> $GITHUB_ENV
+          echo "ANON_JOBS=$(nproc --all)"
       - name: Build anon
         run: |
           brew install automake docbook docbook-xsl zlib libevent openssl@3
@@ -39,7 +42,7 @@ jobs:
             --enable-static-openssl \
             --disable-tool-name-check \
             --disable-gcc-hardening
-          make
+          make -j${{ env.ANON_JOBS }}
       - name: Copy artifact
         run: |
           mkdir -p ${{ env.ANON_ARTIFACT }}
@@ -67,6 +70,7 @@ jobs:
       - name: Set variables
         run: |
           echo "ANON_ARTIFACT=anon-windows-$(uname -m)" >> $GITHUB_ENV
+          echo "ANON_JOBS=$(nproc --all)"
       - name: Install dependencies
         run: |
           apt-get update -qq && \
@@ -81,7 +85,7 @@ jobs:
 
           cd openssl-${OPENSSL_VERSION}
           ./Configure ${MINGW} shared --cross-compile-prefix=${CROSS_HOST}- --prefix="/build/openssl-${BUILD_TYPE}-prefix/"
-          make -j4
+          make -j${{ env.ANON_JOBS }}
           make install
           cd ..
 
@@ -94,7 +98,7 @@ jobs:
 
           cd libevent-${LIBEVENT_VERSION}
           ./configure --host=${CROSS_HOST} --disable-openssl --disable-shared --disable-samples --disable-libevent-regress --enable-static --prefix="/build/libevent-${BUILD_TYPE}-prefix/"
-          make -j4
+          make -j${{ env.ANON_JOBS }}
           make install
           cd ..
 
@@ -107,7 +111,7 @@ jobs:
 
           cd zlib-${ZLIB_VERSION}
           CHOST=${CROSS_HOST} ./configure --static --prefix="/build/zlib-${BUILD_TYPE}-prefix/"
-          make -j4
+          make -j${{ env.ANON_JOBS }}
           make install
           cd ..
 
@@ -129,12 +133,12 @@ jobs:
             --disable-gcc-hardening \
             --enable-static-tor \
             --prefix="/build/anon-prefix"
-          make -j4
+          make -j${{ env.ANON_JOBS }}
           make install
       - name: Copy artifact
         run: |
           mkdir -p ${{ env.ANON_ARTIFACT }}
-          cp ator-protocol/src/app/anon ${{ env.ANON_ARTIFACT }}
+          cp ator-protocol/src/app/anon.exe ${{ env.ANON_ARTIFACT }}
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
