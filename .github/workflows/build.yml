@@ -52,6 +52,8 @@ jobs:
 
   build-windows-64:
     runs-on: ubuntu-latest
+    container:
+      image: ubuntu:latest
     env:
       OPENSSL_VERSION: "1.1.1w"
       LIBEVENT_VERSION: "2.1.12-stable"
