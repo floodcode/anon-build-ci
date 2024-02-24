@@ -21,7 +21,7 @@ jobs:
         run: |
           echo "ANON_ARTIFACT=anon-macos-$(uname -m)" >> $GITHUB_ENV
           echo "ANON_BREW_PREFIX=$(brew --prefix)" >> $GITHUB_ENV
-          echo "ANON_JOBS=$(nproc --all)"
+          echo "ANON_JOBS=$((`nproc`+1))"
       - name: Build anon
         run: |
           brew install automake docbook docbook-xsl zlib libevent openssl@3
@@ -43,10 +43,11 @@ jobs:
             --disable-tool-name-check \
             --disable-gcc-hardening
           make -j${{ env.ANON_JOBS }}
-      - name: Copy artifact
+      - name: Copy executables to artifact directory
         run: |
           mkdir -p ${{ env.ANON_ARTIFACT }}
           cp ator-protocol/src/app/anon ${{ env.ANON_ARTIFACT }}
+          cp ator-protocol/src/tools/anon-gencert ${{ env.ANON_ARTIFACT }}
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
@@ -70,7 +71,7 @@ jobs:
       - name: Set variables
         run: |
           echo "ANON_ARTIFACT=anon-windows-$(uname -m)" >> $GITHUB_ENV
-          echo "ANON_JOBS=$(nproc --all)"
+          echo "ANON_JOBS=$((`nproc`+1))"
       - name: Install dependencies
         run: |
           apt-get update -qq && \
@@ -135,10 +136,11 @@ jobs:
             --prefix="/build/anon-prefix"
           make -j${{ env.ANON_JOBS }}
           make install
-      - name: Copy artifact
+      - name: Copy executables to artifact directory
         run: |
           mkdir -p ${{ env.ANON_ARTIFACT }}
           cp ator-protocol/src/app/anon.exe ${{ env.ANON_ARTIFACT }}
+          cp ator-protocol/src/tools/anon-gencert.exe ${{ env.ANON_ARTIFACT }}
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
